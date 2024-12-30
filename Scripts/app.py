@@ -2,8 +2,16 @@ import glob
 import os
 from music_analysis import analyse_song
 from utils import get_uuid
-from config import STAGING_DIR, valid_extensions
+from config import STAGING_DIR, MUSIC_DIR, valid_extensions
 import hashlib
+
+
+def init():
+    try:
+        os.makedirs(STAGING_DIR, exist_ok=True)
+        os.makedirs(MUSIC_DIR, exist_ok=True)
+    except OSError:
+        print(f"Error creating staging and music directories")
 
 
 def update_library():
@@ -41,4 +49,5 @@ def update_library():
         # TODO: run ffmpeg and split the file for HSL steaming purposes
 
 
+init()
 update_library()
