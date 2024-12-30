@@ -1,13 +1,14 @@
 import uuid
+from db import is_uuid_valid
 from mutagen import File
 from io import BytesIO
 
 
 def get_uuid():
     uhex = uuid.uuid4().hex
-    snippet = "a" + uhex[:7]
-    # TODO: Validate uniqueness of the uuid against the db
-    return snippet
+    snippet = uhex[:8]
+    if is_uuid_valid(snippet):
+        return snippet
 
 
 def get_mp3_tags(file_path):
@@ -26,12 +27,13 @@ def get_mp3_tags(file_path):
     tags = audio.tags.items()
     for key, value in tags:
         if key == "TIT2":
-            processed_tags["name"] = value.text
+            processed_tags["name"] = value.text[0]
         elif key == "TPE1":
-            processed_tags["artists"] = value.text
+            processed_tags["artists"] = value.text[0]
         elif key == "TALB":
-            processed_tags["album"] = value.text
+            processed_tags["album"] = value.text[0]
         elif key.startswith("APIC"):
             processed_tags["cover_art"] = BytesIO(value.data)
+        # TODO: extract Genre information if available
 
     return processed_tags

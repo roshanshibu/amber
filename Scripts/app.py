@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from db import init_db, insert_song_features, insert_song_info, is_duplicate_file
 from music_analysis import analyse_song
 from utils import get_mp3_tags, get_uuid
 from config import STAGING_DIR, MUSIC_DIR, valid_extensions
@@ -8,6 +9,7 @@ from PIL import Image
 
 
 def init():
+    init_db()
     try:
         os.makedirs(STAGING_DIR, exist_ok=True)
         os.makedirs(MUSIC_DIR, exist_ok=True)
@@ -30,21 +32,27 @@ def update_library():
         file_path = STAGING_DIR / file
 
         # compute the sha256 hash
+        file_hash = ""
         with open(file_path, "rb", buffering=0) as f:
             file_hash = hashlib.file_digest(f, "sha256").hexdigest()
-            # TODO: check if the hash exists in the DB
-            # TODO: if it does exist, log and ignore
+            if is_duplicate_file(file_hash):
+                print("Duplicate file! Skipping...")
+                continue
 
         # compute a UUID for the song
         song_uuid = get_uuid()
 
         # analyze the song for features
-        # song_features = analyse_song(file_path)
+        song_features = analyse_song(file_path)
 
         # extract all song metadata: song name (title), artists, album & album art
         tags = get_mp3_tags(file_path)
 
-        # TODO: push all information to the DB (including the hash)
+        # push all information to the DB (including the hash)
+        song_id = insert_song_info(
+            song_uuid, tags["name"], tags["artists"], tags["album"], file_hash
+        )
+        insert_song_features(song_id, song_features)
 
         # create a folder with name as song_uuid in Music folder
         song_folder = MUSIC_DIR / song_uuid
