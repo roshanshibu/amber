@@ -26,7 +26,7 @@ def update_library():
 
     # for each file in the list of acceptable formats inside Staging...
     for file in staging_files:
-        print(f"\n{file} {'-' * 80}")
+        print(f"\n Processing {file} {'-' * 80}")
         file_path = STAGING_DIR / file
 
         # compute the sha256 hash
@@ -59,12 +59,17 @@ def update_library():
                 cover_art = Image.open(tags["cover_art"])
             except Exception as e:
                 return
-
-            # Save as PNG, ignoring original image format
             cover_art.save(song_folder / f"{song_uuid}.png", format="PNG")
 
         # run ffmpeg and split the file for HSL steaming purposes
-        hls_split_command = f'ffmpeg -i "{song_folder / file}" -map 0:a -c:a aac -b:a 128k -hls_time 5 -hls_list_size 0 -hls_segment_filename {song_folder / song_uuid}_%03d.ts -f hls {song_folder / song_uuid}.m3u8'
+        hls_split_command = f"""
+                            ffmpeg -i "{song_folder / file}"                                \
+                            -map 0:a -c:a aac -b:a 128k                                     \
+                            -hls_time 5 -hls_list_size 0                                    \
+                            -hls_segment_filename {song_folder / song_uuid}_%03d.ts         \
+                            -f hls {song_folder / song_uuid}.m3u8                           \
+                            -hide_banner -loglevel error
+                            """
         os.system(hls_split_command)
 
 
