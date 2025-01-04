@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 from db import is_uuid_valid
 from mutagen import File
@@ -9,6 +10,14 @@ def get_uuid():
     snippet = uhex[:8]
     if is_uuid_valid(snippet):
         return snippet
+
+
+def calculate_file_digest(file_path, hash_algo="sha256"):
+    hasher = hashlib.new(hash_algo)
+    with open(file_path, "rb") as f:
+        while chunk := f.read(8192):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 
 def get_mp3_tags(file_path):

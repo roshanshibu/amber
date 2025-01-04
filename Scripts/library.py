@@ -2,9 +2,8 @@ import os
 from pathlib import Path
 from db import init_db, insert_song_features, insert_song_info, is_duplicate_file
 from music_analysis import analyse_song
-from utils import get_mp3_tags, get_uuid
+from utils import calculate_file_digest, get_mp3_tags, get_uuid
 from config import STAGING_DIR, MUSIC_DIR, valid_extensions
-import hashlib
 from PIL import Image
 
 
@@ -33,11 +32,10 @@ def update_library():
 
         # compute the sha256 hash
         file_hash = ""
-        with open(file_path, "rb", buffering=0) as f:
-            file_hash = hashlib.file_digest(f, "sha256").hexdigest()
-            if is_duplicate_file(file_hash):
-                print("Duplicate file! Skipping...")
-                continue
+        file_hash = calculate_file_digest(file_path)
+        if is_duplicate_file(file_hash):
+            print("Duplicate file! Skipping...")
+            continue
 
         # compute a UUID for the song
         song_uuid = get_uuid()
