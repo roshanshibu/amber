@@ -1,3 +1,4 @@
+import numbers
 import sqlite3
 from config import DB_PATH
 
@@ -130,3 +131,44 @@ def is_uuid_valid(new_uuid):
 def is_duplicate_file(hash):
     # check if the same file was processed earlier
     return not is_value_unique("Songs", "Hash", hash)
+
+
+def get_random_song_uuid_list(list_length):
+    try:
+        if not isinstance(list_length, numbers.Number):
+            print(f"List length has to be a number, got: '{e}'")
+            return None
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT UUID FROM Songs ORDER BY RANDOM() LIMIT {list_length}")
+        result = cursor.fetchall()
+        return [uuid_tuple[0] for uuid_tuple in result]
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None
+
+
+def get_random_song_uuid():
+    return get_random_song_uuid_list(1)[0]
+
+
+def get_song_details(uuid):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT ID, Name, UnsafeArtists, Album FROM Songs WHERE UUID=?", (uuid,)
+        )
+        result = cursor.fetchone()
+        if result is not None:
+            return {
+                "uuid": uuid,
+                "name": result[1],
+                "artists": result[2],
+                "album": result[3],
+            }
+        return None
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None

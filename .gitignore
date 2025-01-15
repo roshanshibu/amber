@@ -2,3 +2,4 @@ Staging/*
 Music/*
 *.pyc
 *.db
+Scripts/.env
