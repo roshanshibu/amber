@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from fingerprint import get_audio_fingerprint
 from db import init_db, insert_song_features, insert_song_info, is_duplicate_file
 from music_analysis import analyse_song
 from utils import calculate_file_digest, get_mp3_tags, get_uuid
@@ -46,9 +47,18 @@ def update_library():
         # extract all song metadata: song name (title), artists, album & album art
         tags = get_mp3_tags(file_path)
 
+        # get the audio fingerprint and duration
+        fingerprint, duration = get_audio_fingerprint(file_path)
+
         # push all information to the DB (including the hash)
         song_id = insert_song_info(
-            song_uuid, tags["name"], tags["artists"], tags["album"], file_hash
+            song_uuid,
+            tags["name"],
+            tags["artists"],
+            tags["album"],
+            file_hash,
+            fingerprint,
+            duration,
         )
         insert_song_features(song_id, song_features)
 

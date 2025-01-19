@@ -14,7 +14,9 @@ def init_db():
                 Name TEXT,
                 UnsafeArtists TEXT,
                 Album TEXT,
-                Hash TEXT
+                Hash TEXT,
+                Fingerprint TEXT,
+                Duration INT
             )"""
     )
     conn.commit()
@@ -69,13 +71,14 @@ def init_db():
     cursor.close()
 
 
-def insert_song_info(uuid, name, artists, album, hash):
+def insert_song_info(uuid, name, artists, album, hash, fingerprint, duration):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute(
         """INSERT INTO Songs (UUID, Name, UnsafeArtists,
-                Album, Hash) VALUES (?,?,?,?,?)""",
-        (uuid, name, artists, album, hash),
+                Album, Hash,
+                Fingerprint, Duration) VALUES (?,?,?,?,?,?,?)""",
+        (uuid, name, artists, album, hash, fingerprint, duration),
     )
     song_id = cursor.lastrowid
     conn.commit()
