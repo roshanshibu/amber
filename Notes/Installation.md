@@ -133,6 +133,12 @@ Install requirements
 pip install -r requirements.txt
 ```
 
+Create `.env` file with the following contents
+
+```properties
+AMBER_DUMMY_TOKEN=token_value_here
+```
+
 ### 8. Run the flask server
 
 ```Shell
