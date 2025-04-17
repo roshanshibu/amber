@@ -11,24 +11,16 @@ AMBER_ENV/
 .git
 .gitignore
 
-# OS-specific
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
 # Env & secrets (already copied explicitly or set via compose)
 .env
 *.env
 
-# Build artifacts
-*.egg-info/
-dist/
-build/
-
 # Editor/project files
 .vscode/
-.idea/
-*.swp
-*.bak
+
+
+Amber.db
+Staging/
+Music/
+Notes/
+README.md
