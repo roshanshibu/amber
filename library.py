@@ -6,7 +6,7 @@ from music_analysis import analyse_song
 from utils import calculate_file_digest, get_mp3_tags, get_uuid
 from config import STAGING_DIR, MUSIC_DIR, valid_extensions
 from PIL import Image
-
+import shutil
 
 def init():
     init_db()
@@ -68,7 +68,7 @@ def update_library():
         Path(song_folder).mkdir(parents=True, exist_ok=False)
 
         # rename song file - add song_uuid to the beginning, and move it to the song_uuid folder
-        os.rename(file_path, song_folder / file)
+        shutil.move(file_path, song_folder / file)
 
         # if album art exists, write it to uuid.png
         if tags["cover_art"]:
