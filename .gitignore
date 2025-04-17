@@ -1,0 +1,6 @@
+Staging/*
+Music/*
+*.pyc
+*.db
+AMBER_ENV/*
+.env

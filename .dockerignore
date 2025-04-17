@@ -1,0 +1,34 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Python virtual environment
+AMBER_ENV/
+
+# Git
+.git
+.gitignore
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env & secrets (already copied explicitly or set via compose)
+.env
+*.env
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Editor/project files
+.vscode/
+.idea/
+*.swp
+*.bak
