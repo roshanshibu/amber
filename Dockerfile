@@ -33,6 +33,9 @@ RUN git clone https://github.com/roshanshibu/amber.git /amber
 # Set working directory to Scripts folder
 WORKDIR /amber
 
+# Set execute permission on fpcalc
+RUN chmod +x /amber/bin/fpcalc
+
 # Set up Python virtual environment and install dependencies
 RUN python3 -m venv AMBER_ENV && \
     . AMBER_ENV/bin/activate && \
