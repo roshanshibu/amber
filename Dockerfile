@@ -24,11 +24,8 @@ RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt install -y llvm-10 llvm-10-dev && \
     rm llvm-snapshot.gpg.key
 
-# Clone Amber repo
-RUN git clone https://github.com/roshanshibu/amber.git /amber
-
-# Copy from local for dev
-# COPY . /amber
+# Copy code
+COPY . /amber
 
 # Set working directory to Scripts folder
 WORKDIR /amber
