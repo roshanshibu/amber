@@ -2,10 +2,13 @@ services:
   amber:
     build: .
     ports:
-      - "80:80"
+      - "7000:443"
     volumes:
       - /absolute/path/to/your/host/Music:/amber/Music
       - /absolute/path/to/your/host/Staging:/amber/Staging
+      - /absolute/path/to/your/host/server.crt:/certs/server.crt:ro
+      - /absolute/path/to/your/host/server.key:/certs/server.key:ro
+
     environment:
       - AMBER_DUMMY_TOKEN=token_value_here
       - ACOUSTID_API_KEY=api_key_here
