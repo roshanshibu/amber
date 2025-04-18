@@ -1,8 +1,9 @@
 services:
   amber:
-    build: .
+    image: roshanshibu/amber:alpha
     ports:
       - "7000:443"
+    restart: always
     volumes:
       - /absolute/path/to/your/host/Music:/amber/Music
       - /absolute/path/to/your/host/Staging:/amber/Staging
