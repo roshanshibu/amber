@@ -1,6 +1,6 @@
 services:
   amber:
-    image: roshanshibu/amber:alpha
+    image: roshanshibu/amber:latest
     ports:
       - "7000:443"
     restart: always
