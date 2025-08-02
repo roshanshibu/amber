@@ -4,3 +4,4 @@ Music/*
 *.db
 AMBER_ENV/*
 .env
+.vscode/

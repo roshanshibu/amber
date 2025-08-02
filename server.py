@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from db import get_random_song_uuid, get_random_song_uuid_list, get_song_details
+from db import full_search, get_random_song_uuid_list, get_song_details
 from library import update_library
 
 app = Flask(__name__)
@@ -41,6 +41,7 @@ def updateLibrary():
     update_library()
     return "Library updated", 200
 
+
 @app.route("/songDetails", methods=["GET"])
 @token_required
 def songDetails():
@@ -67,6 +68,19 @@ def randomPlaylist():
             playlist_length = 10
         playlist = get_random_song_uuid_list(playlist_length)
         return {"uuids": playlist}, 200
+
+
+@app.route("/search", methods=["GET"])
+@token_required
+def search():
+    if request.method == "GET":
+        term = request.args.get("term")
+        if not term:
+            return "Malformed request", 400
+        elif len(term.replace(" ", "")) <= 3:
+            return "Include atleast 4 characters in search query", 400
+        else:
+            return {"results": full_search(term)}, 200
 
 
 if __name__ == "__main__":

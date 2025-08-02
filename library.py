@@ -8,6 +8,7 @@ from config import STAGING_DIR, MUSIC_DIR, valid_extensions
 from PIL import Image
 import shutil
 
+
 def init():
     init_db()
     try:

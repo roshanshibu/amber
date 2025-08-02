@@ -139,7 +139,7 @@ def is_duplicate_file(hash):
 def get_random_song_uuid_list(list_length):
     try:
         if not isinstance(list_length, numbers.Number):
-            print(f"List length has to be a number, got: '{e}'")
+            print(f"List length has to be a number, got: '{list_length}'")
             return None
 
         conn = sqlite3.connect(DB_PATH)
@@ -172,6 +172,35 @@ def get_song_details(uuid):
                 "album": result[3],
             }
         return None
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None
+
+
+def full_search(search_term):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        pattern = f"%{search_term.lower()}%"
+        print(pattern)
+        query = """
+        SELECT UUID, Name, UnsafeArtists, Album
+        FROM Songs
+        WHERE LOWER(Name) LIKE ?
+           OR LOWER(UnsafeArtists) LIKE ?
+           OR LOWER(Album) LIKE ?
+        """
+        cursor.execute(
+            query,
+            (pattern, pattern, pattern),
+        )
+        result = cursor.fetchall()
+        response = []
+        for hit in result:
+            response.append(
+                {"UUID": hit[0], "Name": hit[1], "Artists": hit[2], "Album": hit[3]}
+            )
+        return response
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     return None
