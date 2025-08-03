@@ -67,7 +67,7 @@ def randomPlaylist():
         else:
             playlist_length = 10
         playlist = get_random_song_uuid_list(playlist_length)
-        return {"uuids": playlist}, 200
+        return {"playlist": playlist}, 200
 
 
 @app.route("/search", methods=["GET"])

@@ -144,9 +144,22 @@ def get_random_song_uuid_list(list_length):
 
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute(f"SELECT UUID FROM Songs ORDER BY RANDOM() LIMIT {list_length}")
+        cursor.execute(
+            f"SELECT UUID, Name, UnsafeArtists, Album, Duration FROM Songs ORDER BY RANDOM() LIMIT {list_length}"
+        )
         result = cursor.fetchall()
-        return [uuid_tuple[0] for uuid_tuple in result]
+        response = []
+        for hit in result:
+            response.append(
+                {
+                    "UUID": hit[0],
+                    "Name": hit[1],
+                    "Artists": hit[2],
+                    "Album": hit[3],
+                    "Duration": hit[4],
+                }
+            )
+        return response
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     return None
