@@ -50,26 +50,33 @@ def get_mp3_tags(file_path):
     return processed_tags
 
 
-def get_acoustic_id_info(ACOUSTID_API_KEY, fingerprint, duration):
+def get_recordings_from_fingerprint(ACOUSTID_API_KEY, fingerprint, duration, fetchAll):
     acousticid_url = f"https://api.acoustid.org/v2/lookup?client={ACOUSTID_API_KEY}&meta=recordings+releasegroups&fingerprint={fingerprint}&duration={duration}"
     response = requests.request("GET", acousticid_url)
     acousticid_response = response.json()
     try:
-        recording = acousticid_response["results"][0]["recordings"][0]
-        artists = [artist["name"] for artist in recording["artists"]]
-        songName = recording["title"]
-        recordingID = recording["id"]
-        albumName = recording["releasegroups"][0]["title"]
-        isSingle = recording["releasegroups"][0]["type"] == "Single"
-        if isSingle:
-            albumName += " - Single"
-        return {
-            "song": songName,
-            "artists": artists,
-            "recordingID": recordingID,
-            "albumName": albumName,
-            "isSingle": isSingle,
-        }
+        allRecordings = acousticid_response["results"][0]["recordings"]
+        res = []
+        for recording in allRecordings:
+            artists = [artist["name"] for artist in recording["artists"]]
+            songName = recording["title"]
+            recordingID = recording["id"]
+            albumName = recording["releasegroups"][0]["title"]
+            isSingle = recording["releasegroups"][0]["type"] == "Single"
+            if isSingle:
+                albumName += " - Single"
+            res.append(
+                {
+                    "song": songName,
+                    "artists": artists,
+                    "recordingID": recordingID,
+                    "albumName": albumName,
+                    "isSingle": isSingle,
+                }
+            )
+            if not fetchAll:
+                break
+        return res
     except Exception as e:
         print(str(e))
         return None
@@ -104,3 +111,17 @@ def get_album_art_url(musicbrainzReleaseID):
     except Exception as e:
         print(str(e))
         return None
+
+
+def add_album_art_urls_to_recordings(recordings):
+    res = []
+    for recording in recordings:
+        album_art_url = None
+        try:
+            releaseID = get_musicbrainz_releaseID(recording["recordingID"])
+            album_art_url = get_album_art_url(releaseID)
+        except Exception as e:
+            print(str(e))
+        recording["albumArtURL"] = album_art_url
+        res.append(recording)
+    return res

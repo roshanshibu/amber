@@ -9,7 +9,10 @@ from db import (
     get_song_fingerprint_and_duration,
 )
 from library import update_library
-from utils import get_acoustic_id_info, get_album_art_url, get_musicbrainz_releaseID
+from utils import (
+    add_album_art_urls_to_recordings,
+    get_recordings_from_fingerprint,
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -95,26 +98,19 @@ def search():
 def freshMetadata():
     if request.method == "GET":
         uuid = request.args.get("UUID")
+        fetchAll = request.args.get("fetchAll", "0")
         acousticid_data = get_song_fingerprint_and_duration(uuid)
         duration = acousticid_data["duration"]
         fingerprint = acousticid_data["fingerprint"]
         # get song text metadata
-        acoustic_id_info = get_acoustic_id_info(ACOUSTID_API_KEY, fingerprint, duration)
-        if acoustic_id_info is None:
+        recordings = get_recordings_from_fingerprint(
+            ACOUSTID_API_KEY, fingerprint, duration, fetchAll == "1"
+        )
+        if recordings is None:
             return "Error getting acoustic id data", 500
         # get album art
-        musicbrainz_releaseID = get_musicbrainz_releaseID(
-            acoustic_id_info["recordingID"]
-        )
-        album_art_url = None
-        if musicbrainz_releaseID is not None:
-            album_art_url = get_album_art_url(musicbrainz_releaseID)
-        return {
-            "albumName": acoustic_id_info["albumName"],
-            "artists": acoustic_id_info["artists"],
-            "song": acoustic_id_info["song"],
-            "albumart": album_art_url,
-        }, 200
+        recordings = add_album_art_urls_to_recordings(recordings)
+        return recordings, 200
 
 
 @app.route("/replaceMetadata", methods=["POST"])
