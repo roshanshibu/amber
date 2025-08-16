@@ -174,7 +174,7 @@ def get_song_details(uuid):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            f"SELECT ID, Name, UnsafeArtists, Album FROM Songs WHERE UUID=?", (uuid,)
+            "SELECT ID, Name, UnsafeArtists, Album FROM Songs WHERE UUID=?", (uuid,)
         )
         result = cursor.fetchone()
         if result is not None:
@@ -188,6 +188,20 @@ def get_song_details(uuid):
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     return None
+
+
+def get_song_fingerprint_and_duration(uuid):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT Fingerprint, Duration FROM Songs WHERE UUID=?", (uuid,))
+        result = cursor.fetchone()
+        if result is not None:
+            return {"fingerprint": result[0], "duration": result[1]}
+        return None
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return False
 
 
 def full_search(search_term):
