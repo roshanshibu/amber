@@ -116,12 +116,22 @@ def get_album_art_url(musicbrainzReleaseID):
 def add_album_art_urls_to_recordings(recordings):
     res = []
     for recording in recordings:
-        album_art_url = None
+        final_album_art_url = None
         try:
             releaseID = get_musicbrainz_releaseID(recording["recordingID"])
             album_art_url = get_album_art_url(releaseID)
+            final_album_art_url = get_final_url(album_art_url)
         except Exception as e:
             print(str(e))
-        recording["albumArtURL"] = album_art_url
+        recording["albumArtURL"] = final_album_art_url
         res.append(recording)
     return res
+
+
+def get_final_url(url):
+    try:
+        response = requests.get(url, allow_redirects=True, timeout=10)
+        return response.url
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+        return None
