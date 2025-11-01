@@ -216,6 +216,7 @@ def full_search(search_term):
         WHERE LOWER(Name) LIKE ?
            OR LOWER(UnsafeArtists) LIKE ?
            OR LOWER(Album) LIKE ?
+        LIMIT 50
         """
         cursor.execute(
             query,
