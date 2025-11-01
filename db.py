@@ -211,7 +211,7 @@ def full_search(search_term):
         pattern = f"%{search_term.lower()}%"
         print(pattern)
         query = """
-        SELECT UUID, Name, UnsafeArtists, Album
+        SELECT UUID, Name, UnsafeArtists, Album, Duration
         FROM Songs
         WHERE LOWER(Name) LIKE ?
            OR LOWER(UnsafeArtists) LIKE ?
@@ -225,7 +225,13 @@ def full_search(search_term):
         response = []
         for hit in result:
             response.append(
-                {"UUID": hit[0], "Name": hit[1], "Artists": hit[2], "Album": hit[3]}
+                {
+                    "UUID": hit[0],
+                    "Name": hit[1],
+                    "Artists": hit[2],
+                    "Album": hit[3],
+                    "Duration": hit[4],
+                }
             )
         return response
     except sqlite3.Error as e:
