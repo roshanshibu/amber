@@ -7,6 +7,8 @@ from db import (
     get_random_song_uuid_list,
     get_song_details,
     get_song_fingerprint_and_duration,
+    update_song_album,
+    update_song_artists,
     update_song_name,
 )
 from library import update_library
@@ -131,6 +133,10 @@ def replaceMetadata():
             download_album_art(albumArtURL, uuid)
         if songName is not None:
             update_song_name(uuid, songName)
+        if artistsUnsafe is not None:
+            update_song_artists(uuid, artistsUnsafe)
+        if albumName is not None:
+            update_song_album(uuid, albumName)
         return "not implemented", 200
 
 

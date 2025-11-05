@@ -251,3 +251,31 @@ def update_song_name(uuid, new_name):
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     return None
+
+
+def update_song_artists(uuid, new_artists):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE Songs SET UnsafeArtists = ? WHERE UUID = ?",
+            (new_artists, uuid),
+        )
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None
+
+
+def update_song_album(uuid, new_album):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE Songs SET Album = ? WHERE UUID = ?",
+            (new_album, uuid),
+        )
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None
