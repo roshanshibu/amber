@@ -209,7 +209,6 @@ def full_search(search_term):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         pattern = f"%{search_term.lower()}%"
-        print(pattern)
         query = """
         SELECT UUID, Name, UnsafeArtists, Album, Duration
         FROM Songs
@@ -235,6 +234,20 @@ def full_search(search_term):
                 }
             )
         return response
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    return None
+
+
+def update_song_name(uuid, new_name):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE Songs SET Name = ? WHERE UUID = ?",
+            (new_name, uuid),
+        )
+        conn.commit()
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     return None

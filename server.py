@@ -7,10 +7,12 @@ from db import (
     get_random_song_uuid_list,
     get_song_details,
     get_song_fingerprint_and_duration,
+    update_song_name,
 )
 from library import update_library
 from utils import (
     add_album_art_urls_to_recordings,
+    download_album_art,
     get_recordings_from_fingerprint,
 )
 
@@ -118,10 +120,17 @@ def freshMetadata():
 def replaceMetadata():
     if request.method == "POST":
         uuid = request.args.get("UUID")
+        if uuid is None:
+            return "UUID is missing", 400
         albumName = request.args.get("albumName")
         artistsUnsafe = request.args.get("artistsUnsafe")
         songName = request.args.get("songName")
         albumArtURL = request.args.get("albumArtURL")
+        print(uuid, albumName, artistsUnsafe, songName, albumArtURL)
+        if albumArtURL is not None:
+            download_album_art(albumArtURL, uuid)
+        if songName is not None:
+            update_song_name(uuid, songName)
         return "not implemented", 200
 
 

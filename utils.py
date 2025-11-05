@@ -1,10 +1,13 @@
 import hashlib
+import time
 import uuid
 
 import requests
+from config import MUSIC_DIR
 from db import is_uuid_valid
 from mutagen import File
 from io import BytesIO
+from PIL import Image
 
 
 def get_uuid():
@@ -109,7 +112,7 @@ def get_album_art_url(musicbrainzReleaseID):
     try:
         return coverart_response["images"][0]["thumbnails"]["large"]
     except Exception as e:
-        print(str(e))
+        print("failed to get large thumbnail", str(e))
         return None
 
 
@@ -135,3 +138,22 @@ def get_final_url(url):
     except requests.RequestException as e:
         print(f"Error: {e}")
         return None
+
+
+def download_album_art(new_image_url, uuid):
+    album_art_path = MUSIC_DIR / uuid / f"{uuid}.png"
+    print("downloading new album art", new_image_url, uuid)
+    response = requests.get(new_image_url)
+    if response.status_code == 200:
+        img = Image.open(BytesIO(response.content))
+
+        if album_art_path.exists():
+            timestamp = int(time.time())
+            new_name = f"{album_art_path.stem}_{timestamp}{album_art_path.suffix}"
+            album_art_path.rename(album_art_path.parent / new_name)
+            print(f"Existing album art renamed to {new_name}")
+
+        img.convert("RGB").save(album_art_path, "PNG")
+        print(f"New image saved as {album_art_path}")
+        return True
+    return False
